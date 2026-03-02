@@ -5,7 +5,6 @@ import android.app.NotificationChannel
 import android.app.NotificationManager
 import android.app.PendingIntent
 import android.app.Service
-import android.content.Context
 import android.content.Intent
 import android.os.IBinder
 import kotlinx.coroutines.CoroutineScope
@@ -42,8 +41,7 @@ class KeepAliveService : Service() {
         if (sshdProcess?.isAlive == true || isStarting) return START_STICKY
         isStarting = true
         serviceScope.launch {
-            runCatching { startLinuxContainer() }
-                .onFailure { appendLog("Exception ERROR: ${it.message}") }
+            runCatching { startLinuxContainer() }.onFailure { appendLog("Exception ERROR: ${it.message}") }
             isStarting = false
         }
         return START_STICKY
@@ -135,11 +133,8 @@ class KeepAliveService : Service() {
     private fun getLocalIpAddress(): String {
         return try {
             NetworkInterface.getNetworkInterfaces().asSequence()
-                .flatMap { it.inetAddresses.asSequence() }
-                .filterNot { it.isLoopbackAddress }
-                .filter { it.address.size == 4 }
-                .map { it.hostAddress }
-                .firstOrNull() ?: "127.0.0.1"
+                .flatMap { it.inetAddresses.asSequence() }.filterNot { it.isLoopbackAddress }
+                .filter { it.address.size == 4 }.map { it.hostAddress }.firstOrNull() ?: "127.0.0.1"
         } catch (_: Exception) {
             "127.0.0.1"
         }
@@ -159,13 +154,10 @@ class KeepAliveService : Service() {
             Intent(this, MainActivity::class.java),
             PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE,
         )
-        return Notification.Builder(this, CHANNEL_ID)
-            .setContentTitle("ALinux 正在运行")
+        return Notification.Builder(this, CHANNEL_ID).setContentTitle("ALinux 正在运行")
             .setContentText("前台服务已启动，点击返回应用")
-            .setSmallIcon(android.R.drawable.stat_notify_sync)
-            .setContentIntent(contentIntent)
-            .setOngoing(true)
-            .build()
+            .setSmallIcon(android.R.drawable.stat_notify_sync).setContentIntent(contentIntent)
+            .setOngoing(true).build()
     }
 
     private fun createNotificationChannel() {
