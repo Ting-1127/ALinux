@@ -118,13 +118,13 @@ class LinuxManager(app: Application, private val config: AppConfig) {
         config: ContainerConfig = defaultContainerConfig,
         listener: ProgressListener? = null,
     ): Int {
-        // 规范化换行符：Windows 下创建的文件包含 \r\n，传给 bash -c 会导致解析错误
+        // 规范化换行符：Windows 下创建的文件包含 \r\n，传给 sh -c 会导致解析错误
         val script = assets.open(scriptAsset).bufferedReader().readText()
             .replace("\r\n", "\n").replace("\r", "\n")
         val proc = engine.startProcess(
             containerId = containerId,
             config = config.copy(
-                cmd = listOf("/bin/bash", "-c", script),
+                cmd = listOf("/bin/sh", "-c", script),
                 env = env,
             ),
         ).getOrThrow()
@@ -144,13 +144,13 @@ class LinuxManager(app: Application, private val config: AppConfig) {
         env: Map<String, String> = emptyMap(),
         config: ContainerConfig = defaultContainerConfig,
     ): Process {
-        // 规范化换行符：Windows 下创建的文件包含 \r\n，传给 bash -c 会导致解析错误
+        // 规范化换行符：Windows 下创建的文件包含 \r\n，传给 sh -c 会导致解析错误
         val script = assets.open(scriptAsset).bufferedReader().readText()
             .replace("\r\n", "\n").replace("\r", "\n")
         return engine.startProcess(
             containerId = containerId,
             config = config.copy(
-                cmd = listOf("/bin/bash", "-c", script),
+                cmd = listOf("/bin/sh", "-c", script),
                 env = env,
             ),
         ).getOrThrow()

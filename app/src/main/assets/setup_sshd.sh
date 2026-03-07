@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/bin/sh
 # Required env vars: SSH_PORT, SSH_PASSWORD, SSH_USER
 
 if [ ! -f /etc/ssh/ssh_host_rsa_key ]; then
@@ -10,8 +10,8 @@ fi
 if ! id sshd >/dev/null 2>&1; then
     echo '[setup] Creating sshd privilege separation user...'
     mkdir -p /var/empty
-    groupadd -r -g 74 sshd 2>/dev/null || true
-    useradd -r -g sshd -u 74 -d /var/empty -s /usr/sbin/nologin sshd 2>/dev/null || true
+    addgroup -g 74 sshd 2>/dev/null || true
+    adduser -u 74 -G sshd -h /var/empty -s /usr/sbin/nologin -D sshd 2>/dev/null || true
 fi
 
 if ! grep -q "^${SSH_USER}:[^!*]" /etc/shadow 2>/dev/null; then
